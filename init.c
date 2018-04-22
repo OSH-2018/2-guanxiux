@@ -214,10 +214,17 @@ int main()
                         }
                         else if (strcmp(args[count][i], "<") == 0)
                         {
+                            char buffer[128];
+                            struct stat statbuff;
                             args[count][i] = NULL;
                             tag_redirect = 1;
-                            redirect_fd = open(args[count][i + 1], O_RDONLY | O_WRONLY | O_CREAT);
-                            dup2(redirect_fd, STDIN_FILENO);
+                            stat(args[count][i + 1], &statbuff);
+                            redirect_fd = open(args[count][i + 1], O_RDWR); 
+
+                            read(redirect_fd, buffer, statbuff.st_size - 1);
+                        
+                            fflush(stdin);
+                            write(STDIN_FILENO, buffer, statbuff.st_size);
                             break;
                         }
 					}
